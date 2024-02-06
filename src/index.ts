@@ -121,4 +121,19 @@ export class IDBKV<K extends IDBValidKey, V> {
 			request.onerror = () => reject(request.error);
 		});
 	}
+
+	/**
+	 * Checks if a key exists in the database.
+	 * @param key - The key to check.
+	 * @returns A promise that resolves to a boolean indicating whether the key exists.
+	 */
+	async has(key: K): Promise<boolean> {
+		const store = await this.access("readonly");
+
+		return new Promise((resolve, reject) => {
+			const request = store.getKey(key);
+			request.onsuccess = () => resolve(request.result !== undefined);
+			request.onerror = () => reject(request.error);
+		});
+	}
 }
