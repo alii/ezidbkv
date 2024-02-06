@@ -1,0 +1,30 @@
+{
+	"name": "idbkv",
+	"version": "0.0.0",
+	"repository": "git@github.com:alii/idbkv.git",
+	"author": "Alistair Smith <hi@alistair.sh>",
+	"license": "MIT",
+	"type": "module",
+	"packageManager": "yarn@4.1.0",
+	"main": "./dist/index.cjs",
+	"types": "./dist/index.d.cts",
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"scripts": {
+		"build": "tsup src/index.ts --dts --format cjs,esm --target es2020 --clean",
+		"release": "yarn build && yarn version apply && yarn npm publish --access public"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"devDependencies": {
+		"tsup": "^8.0.1",
+		"typescript": "^5.3.3"
+	}
+}
