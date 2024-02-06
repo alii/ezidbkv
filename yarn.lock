@@ -762,6 +762,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ezidbkv@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "ezidbkv@workspace:."
+  dependencies:
+    tsup: "npm:^8.0.1"
+    typescript: "npm:^5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "fast-glob@npm:^3.2.9":
   version: 3.3.2
   resolution: "fast-glob@npm:3.3.2"
@@ -934,15 +943,6 @@ __metadata:
   checksum: 10c0/98102bc66b33fcf5ac044099d1257ba0b7ad5e3ccd3221f34dd508ab4070edff183276221684e1e0555b145fce0850c9f7d2b60a9fcac50fbb4ea0d6e845a3b1
   languageName: node
   linkType: hard
-
-"idbkv@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "idbkv@workspace:."
-  dependencies:
-    tsup: "npm:^8.0.1"
-    typescript: "npm:^5.3.3"
-  languageName: unknown
-  linkType: soft
 
 "ignore@npm:^5.2.0":
   version: 5.3.1
