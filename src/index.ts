@@ -68,6 +68,17 @@ export class IDBKV<K extends IDBValidKey, V> {
 	}
 
 	/**
+	 * Update a key through an action
+	 * @param key The key to update
+	 * @param action An action that accepts the old state and returns new state
+	 */
+	async update(key: K, action: (value: V) => Promise<V> | V): Promise<void> {
+		const value = await this.get(key);
+		const next = await action(value);
+		await this.set(key, next);
+	}
+
+	/**
 	 * Deletes a value from the object store based on the specified key.
 	 *
 	 * @param key - The key of the value to delete.
