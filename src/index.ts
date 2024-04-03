@@ -5,26 +5,35 @@
  * @typeparam V - The type of the values in the store.
  */
 export class IDBKV<K extends IDBValidKey, V> {
-	private promise: Promise<IDBDatabase>;
+	private instance: IDBDatabase | undefined;
 
 	/**
 	 * Constructs a new instance of the class.
+	 *
 	 * @param db The name of the database
 	 * @param store The name of the store
 	 */
-	public constructor(private db: string, private store = "kv") {
-		this.promise = this.open();
-	}
+	public constructor(private db: string, private store = "kv") {}
 
-	private open(): Promise<IDBDatabase> {
-		return new Promise((resolve, reject) => {
-			const openRequest = indexedDB.open(this.db, 1);
-			openRequest.onupgradeneeded = () => {
-				openRequest.result.createObjectStore(this.store);
-			};
-			openRequest.onsuccess = () => resolve(openRequest.result);
-			openRequest.onerror = () => reject(openRequest.error);
-		});
+	private async resolve(): Promise<IDBDatabase> {
+		if (!this.instance) {
+			const instance = await new Promise<IDBDatabase>((resolve, reject) => {
+				const openRequest = indexedDB.open(this.db, 1);
+
+				openRequest.onupgradeneeded = () => {
+					openRequest.result.createObjectStore(this.store);
+				};
+
+				openRequest.onsuccess = () => resolve(openRequest.result);
+				openRequest.onerror = () => reject(openRequest.error);
+			});
+
+			this.instance = instance;
+
+			return instance;
+		}
+
+		return this.instance;
 	}
 
 	/**
@@ -34,11 +43,12 @@ export class IDBKV<K extends IDBValidKey, V> {
 	 * @returns A promise that resolves to the IDBObjectStore.
 	 */
 	private async access(mode: IDBTransactionMode): Promise<IDBObjectStore> {
-		return this.promise.then(db => db.transaction(this.store, mode).objectStore(this.store));
+		return this.resolve().then(db => db.transaction(this.store, mode).objectStore(this.store));
 	}
 
 	/**
 	 * Retrieves the value associated with the specified key from the object store.
+	 *
 	 * @param key - The key of the value to retrieve.
 	 * @returns A promise that resolves with the retrieved value.
 	 */
@@ -69,6 +79,7 @@ export class IDBKV<K extends IDBValidKey, V> {
 
 	/**
 	 * Update a key through an action
+	 *
 	 * @param key The key to update
 	 * @param action An action that accepts the old state and returns new state
 	 */
@@ -95,6 +106,7 @@ export class IDBKV<K extends IDBValidKey, V> {
 
 	/**
 	 * Clears all values from the object store.
+	 *
 	 * @returns A promise that resolves when the store is successfully cleared, or rejects with an error if an error occurs.
 	 */
 	async clear(): Promise<void> {
@@ -122,6 +134,7 @@ export class IDBKV<K extends IDBValidKey, V> {
 
 	/**
 	 * Retrieves all the values stored in the database.
+	 *
 	 * @returns A promise that resolves with an array of values.
 	 */
 	async values(): Promise<V[]> {
@@ -135,6 +148,7 @@ export class IDBKV<K extends IDBValidKey, V> {
 
 	/**
 	 * Checks if a key exists in the database.
+	 *
 	 * @param key - The key to check.
 	 * @returns A promise that resolves to a boolean indicating whether the key exists.
 	 */
